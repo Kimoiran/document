@@ -11,12 +11,15 @@
 				padding: 0;
 			}
 			.container {
-				max-width: 900px;
-				margin: 30px auto;
-				background: #fff;
-				border-radius: 8px;
-				box-shadow: 0 2px 8px #ccc;
-				padding: 24px;
+				width: 100vw;
+				height: 100vh;
+				min-height: 100vh;
+				margin: 0;
+				background: transparent;
+				border-radius: 0;
+				box-shadow: none;
+				padding: 0;
+				box-sizing: border-box;
 			}
 			h1 {
 				text-align: center;
@@ -24,12 +27,13 @@
 			table {
 				border-collapse: collapse;
 				width: 100%;
-				margin-bottom: 32px;
+				margin-bottom: 18px;
+				font-size: 14px;
 			}
 			th,
 			td {
 				border: 1px solid #ccc;
-				padding: 8px 12px;
+				padding: 4px 6px;
 				text-align: center;
 			}
 			th {
@@ -40,18 +44,28 @@
 			}
 			form {
 				display: flex;
-				flex-wrap: wrap;
-				gap: 16px;
-				align-items: flex-end;
+				justify-content: center;
+				margin-top: 8px;
 			}
-			.form-group {
-				display: flex;
-				flex-direction: column;
-				flex: 1 1 180px;
+			.form-table {
+				border-collapse: separate;
+				border-spacing: 6px 4px;
+				width: auto;
+			}
+			.form-table td {
+				text-align: right;
+				padding: 2px 4px;
+			}
+			.form-table input,
+			.form-table select {
+				width: 120px;
+				box-sizing: border-box;
+				font-size: 13px;
+				padding: 3px 4px;
 			}
 			label {
-				margin-bottom: 4px;
 				font-weight: bold;
+				margin-bottom: 0;
 			}
 			input,
 			select {
@@ -60,12 +74,13 @@
 				border-radius: 4px;
 			}
 			button {
-				padding: 8px 24px;
+				padding: 4px 16px;
 				border: black 1px solid;
 				background: #fcfeff;
 				color: #000000;
 				border-radius: 4px;
 				cursor: pointer;
+				font-size: 13px;
 			}
 			button:hover {
 				background: #dee2e4;
@@ -120,85 +135,102 @@
 
 			<h2>添加新员工</h2>
 			<form id="empForm" autocomplete="off">
-				<div class="form-group">
-					<label for="empId">员工ID</label>
-					<input
-						type="number"
-						id="empId"
-						name="empId"
-						required
-						min="1000"
-						max="9999"
-						placeholder="1000-9999"
-					/>
-				</div>
-				<div class="form-group">
-					<label for="empName">姓名</label>
-					<input
-						type="text"
-						id="empName"
-						name="empName"
-						required
-						pattern="[\u4e00-\u9fa5A-Za-z]{2,10}"
-						placeholder="2-10位中英文"
-					/>
-				</div>
-				<div class="form-group">
-					<label for="empDept">部门</label>
-					<select id="empDept" name="empDept" required>
-						<option value="">请选择</option>
-						<option value="技术部">技术部</option>
-						<option value="人事部">人事部</option>
-						<option value="财务部">财务部</option>
-						<option value="市场部">市场部</option>
-					</select>
-				</div>
-				<div class="form-group">
-					<label for="empJob">职位</label>
-					<input
-						type="text"
-						id="empJob"
-						name="empJob"
-						required
-						placeholder="如：工程师"
-					/>
-				</div>
-				<div class="form-group">
-					<label for="empDate">入职日期</label>
-					<input
-						type="date"
-						id="empDate"
-						name="empDate"
-						required
-						max="9999-12-31"
-					/>
-				</div>
-				<div class="form-group">
-					<label for="empEmail">邮箱</label>
-					<input
-						type="email"
-						id="empEmail"
-						name="empEmail"
-						required
-						placeholder="example@domain.com"
-					/>
-				</div>
-				<div class="form-group">
-					<label for="empSalary">工资</label>
-					<input
-						type="number"
-						id="empSalary"
-						name="empSalary"
-						required
-						min="1000"
-						max="100000"
-						step="100"
-						placeholder="1000-100000"
-					/>
-				</div>
-				<div class="form-group" style="flex: 0 0 100px; align-items: flex-end">
-					<button type="submit">添加</button>
-				</div>
+				<table class="form-table">
+					<tr>
+						<td><label for="empId">员工ID</label></td>
+						<td>
+							<input
+								type="number"
+								id="empId"
+								name="empId"
+								required
+								min="1000"
+								max="9999"
+								placeholder="1000-9999"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="empName">姓名</label></td>
+						<td>
+							<input
+								type="text"
+								id="empName"
+								name="empName"
+								required
+								pattern="[\u4e00-\u9fa5A-Za-z]{2,10}"
+								placeholder="2-10位中英文"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="empDept">部门</label></td>
+						<td>
+							<select id="empDept" name="empDept" required>
+								<option value="">请选择</option>
+								<option value="技术部">技术部</option>
+								<option value="人事部">人事部</option>
+								<option value="财务部">财务部</option>
+								<option value="市场部">市场部</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="empJob">职位</label></td>
+						<td>
+							<input
+								type="text"
+								id="empJob"
+								name="empJob"
+								required
+								placeholder="如：工程师"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="empDate">入职日期</label></td>
+						<td>
+							<input
+								type="date"
+								id="empDate"
+								name="empDate"
+								required
+								max="9999-12-31"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="empEmail">邮箱</label></td>
+						<td>
+							<input
+								type="email"
+								id="empEmail"
+								name="empEmail"
+								required
+								placeholder="example@domain.com"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="empSalary">工资</label></td>
+						<td>
+							<input
+								type="number"
+								id="empSalary"
+								name="empSalary"
+								required
+								min="1000"
+								max="100000"
+								step="100"
+								placeholder="1000-100000"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><button type="submit">添加</button></td>
+					</tr>
+				</table>
 			</form>
 		</div>
 		<script>

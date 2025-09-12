@@ -137,8 +137,15 @@ def main():
     # 遍历目录生成文件列表
     files = walk_directory(root_dir, '', root_dir)
     
-    # 输出JSON格式的结果
-    print(json.dumps(files, ensure_ascii=False, indent=2))
+    # 输出JSON格式的结果，确保为UTF-8编码（带BOM）
+    output = json.dumps(files, ensure_ascii=False, indent=2)
+    try:
+        # Python 3: 输出为UTF-8带BOM字节流，兼容Windows记事本
+        sys.stdout.buffer.write(b'\xef\xbb\xbf')
+        sys.stdout.buffer.write(output.encode('utf-8'))
+    except Exception:
+        # 兼容极少数环境
+        print(output)
 
 if __name__ == "__main__":
     main()
