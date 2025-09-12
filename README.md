@@ -12,7 +12,7 @@
 
 ## Python文件与Home文件的使用方法
 
-如果您拥有Python环境，本文档提供了一个简陋的搜索功能/阅读功能
+如果您拥有Python3环境，本文档提供了一个简陋的搜索功能/阅读功能
 
 在该目录运行python generateFileTree.py > filelist.json，可以将文档/文件目录生成为filelist.json文件，这是Home文件中的目录所需要读取的部分
 
