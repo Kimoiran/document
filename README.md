@@ -9,3 +9,11 @@
 ## 这个文档会包括什么
 
 文档会包括我在学习过程中的很多知识，不一定都是有用的，也不一定都是正确的，只是部分经验之谈。
+
+## Python文件与Home文件的使用方法
+
+如果您拥有Python环境，本文档提供了一个简陋的搜索功能/阅读功能
+
+在该目录运行python generateFileTree.py > filelist.json，可以将文档/文件目录生成为filelist.json文件，这是Home文件中的目录所需要读取的部分
+
+使用python -m http.server 8000在document目录运行，之后访问localhost:8000/home.html，就可以使用这个阅读功能，功能非常简单且简陋，如果您有更好的选择， 请不要在意这一条。

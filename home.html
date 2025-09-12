@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<title>文档搜索与阅读器</title>
+		<style>
+			#content img {
+				max-width: 100%;
+				height: auto;
+				display: block;
+				margin: 12px auto;
+			}
+			body {
+				font-family: Arial, sans-serif;
+				margin: 0;
+				padding: 0;
+				background: #f7f7f7;
+			}
+			.main-layout {
+				display: flex;
+				height: 100vh;
+				overflow: hidden;
+			}
+			.sidebar {
+				width: 260px;
+				background: #f4f6fa;
+				border-right: 1px solid #e0e0e0;
+				transition: width 0.2s;
+				overflow-x: hidden;
+				position: relative;
+				min-width: 48px;
+				display: flex;
+				flex-direction: column;
+				height: 100vh;
+			}
+			.sidebar.collapsed {
+				width: 48px;
+			}
+			.sidebar-toggle {
+				position: absolute;
+				top: 10px;
+				right: -16px;
+				width: 32px;
+				height: 32px;
+				background: #fff;
+				border: 1px solid #e0e0e0;
+				border-radius: 50%;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				box-shadow: 0 2px 6px #eee;
+				z-index: 10;
+			}
+			.sidebar-content {
+				padding: 16px 8px 8px 16px;
+				flex: 1;
+				overflow-y: auto;
+			}
+			#search {
+				width: 90%;
+				padding: 6px;
+				font-size: 15px;
+				margin-bottom: 10px;
+			}
+			#fileList {
+				margin: 0;
+			}
+			.file-item {
+				padding: 6px 0 6px 12px;
+				border-bottom: 1px solid #eee;
+				cursor: pointer;
+				font-size: 15px;
+			}
+			.file-item:hover {
+				background: #e6f2ff;
+			}
+			.folder-title {
+				font-weight: bold;
+				margin: 12px 0 4px 0;
+				font-size: 15px;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+			}
+			.folder-title::before {
+				content: "▼";
+				margin-right: 6px;
+				font-size: 12px;
+				transition: transform 0.2s;
+			}
+			.folder-title.collapsed::before {
+				content: "▶";
+			}
+			.folder-items {
+				margin-left: 16px;
+				overflow: hidden;
+				transition: max-height 0.3s ease;
+				max-height: 1000px;
+			}
+			.folder-items.collapsed {
+				max-height: 0;
+			}
+			.container {
+				height: 100vh;
+				overflow: hidden;
+			}
+			.content-container {
+				flex: 1;
+				margin: 30px;
+				background: #fff;
+				border-radius: 8px;
+				box-shadow: 0 2px 8px #ccc;
+				padding: 24px;
+				min-width: 0;
+				height: calc(100vh - 60px);
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+			}
+			h1 {
+				text-align: center;
+				margin-top: 0;
+			}
+			#content {
+				background: #f9f9f9;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				padding: 16px;
+				flex: 1;
+				overflow-y: auto;
+				margin-top: 18px;
+			}
+		</style>
+		<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="main-layout">
+				<div class="sidebar" id="sidebar">
+					<div
+						class="sidebar-toggle"
+						id="sidebarToggle"
+						title="收起/展开侧边栏"
+					>
+						&#9776;
+					</div>
+					<div class="sidebar-content">
+						<input
+							id="search"
+							type="text"
+							placeholder="输入关键词搜索文件..."
+							oninput="filterFiles()"
+						/>
+						<div id="fileList"></div>
+					</div>
+				</div>
+				<div class="content-container">
+					<h1>文档搜索与阅读器</h1>
+					<div id="content">点击左侧文件名可预览内容</div>
+				</div>
+			</div>
+			<script>
+				// 文件数据，实际可由后端生成
+				let files = [];
+
+				// 按编号-时间-编号排序
+				files.sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+
+				function filterFiles() {
+					const keyword = document
+						.getElementById("search")
+						.value.trim()
+						.toLowerCase();
+					renderFileList(keyword);
+				}
+				window.filterFiles = function () {
+					const keyword = document
+						.getElementById("search")
+						.value.trim()
+						.toLowerCase();
+					window.renderFileList(keyword);
+				};
+
+				window.renderFileList = function (keyword = "") {
+					const list = document.getElementById("fileList");
+					list.innerHTML = "";
+
+					// 只显示根目录README.md
+					const rootReadme = files.find(
+						(f) =>
+							(!f.folder || f.folder === "") &&
+							f.name.toLowerCase() === "readme.md"
+					);
+					if (
+						rootReadme &&
+						(!keyword || rootReadme.name.toLowerCase().includes(keyword))
+					) {
+						const item = document.createElement("div");
+						item.className = "file-item";
+						item.textContent = rootReadme.name;
+						item.onclick = function () {
+							window.loadFile("", rootReadme.name);
+						};
+						list.appendChild(item);
+					}
+
+					// 按文件夹分组文件（不含根目录）
+					const folderGroups = {};
+					files.forEach((file) => {
+						if (!file.folder) return;
+						if (file.folder === "") return; // 跳过根目录
+						if (
+							keyword &&
+							!file.name.toLowerCase().includes(keyword) &&
+							!file.folder.toLowerCase().includes(keyword)
+						)
+							return;
+						if (!folderGroups[file.folder]) {
+							folderGroups[file.folder] = [];
+						}
+						folderGroups[file.folder].push(file);
+					});
+
+					// 渲染文件夹和文件
+					Object.keys(folderGroups)
+						.sort()
+						.forEach((folder) => {
+							const folderFiles = folderGroups[folder];
+							// 创建文件夹标题
+							const folderTitle = document.createElement("div");
+							folderTitle.className = "folder-title";
+							folderTitle.textContent = folder;
+							folderTitle.onclick = function (e) {
+								if (
+									e.target !== folderTitle &&
+									!e.target.classList.contains("folder-title")
+								)
+									return;
+								const folderItems = folderTitle.nextElementSibling;
+								folderTitle.classList.toggle("collapsed");
+								folderItems.classList.toggle("collapsed");
+							};
+							list.appendChild(folderTitle);
+
+							// 创建文件夹内容容器
+							const folderItems = document.createElement("div");
+							folderItems.className = "folder-items";
+							list.appendChild(folderItems);
+
+							// 添加文件到文件夹
+							folderFiles.forEach((file) => {
+								const item = document.createElement("div");
+								item.className = "file-item";
+								item.textContent = file.name;
+								item.onclick = function () {
+									window.loadFile(file.folder, file.name);
+								};
+								folderItems.appendChild(item);
+							});
+						});
+				};
+
+				window.loadFile = function (folder, name) {
+					// 编码中文路径
+					const encodedFolder = encodeURIComponent(folder);
+					const encodedName = encodeURIComponent(name);
+					const path = `${encodedFolder}/${encodedName}`;
+
+					fetch(path)
+						.then((res) => {
+							if (!res.ok) {
+								throw new Error(`HTTP error! status: ${res.status}`);
+							}
+							return res.text();
+						})
+						.then((txt) => {
+							if (name.endsWith(".md")) {
+								// 渲染前修正图片路径：只修正以 images/ 开头的相对路径，并自动encodeURI整个路径
+								const fixed = txt.replace(
+									/!\[(.*?)\]\((images\/[\w\-\/\.\u4e00-\u9fa5]+)\)/g,
+									function (match, alt, imgPath) {
+										// 始终拼接md文件夹前缀
+										const fullPath = encodeURI(folder + "/" + imgPath);
+										return `![${alt}](${fullPath})`;
+									}
+								);
+								document.getElementById("content").innerHTML =
+									marked.parse(fixed);
+							} else if (name.endsWith(".html")) {
+								document.getElementById("content").innerHTML = txt;
+							} else {
+								document.getElementById("content").textContent = txt;
+							}
+						})
+						.catch((error) => {
+							console.error("加载文件错误:", error);
+							document.getElementById(
+								"content"
+							).textContent = `无法加载文件内容: ${error.message}`;
+						});
+				};
+
+				// 侧边栏收缩功能
+				document.addEventListener("DOMContentLoaded", function () {
+					const sidebar = document.getElementById("sidebar");
+					const toggle = document.getElementById("sidebarToggle");
+					toggle.onclick = function () {
+						sidebar.classList.toggle("collapsed");
+						if (sidebar.classList.contains("collapsed")) {
+							toggle.innerHTML = "▶";
+						} else {
+							toggle.innerHTML = "&#9776;";
+						}
+					};
+					// 动态加载文件列表
+					fetch("filelist.json")
+						.then((res) => {
+							if (!res.ok) {
+								throw new Error(`HTTP error! status: ${res.status}`);
+							}
+							return res.json();
+						})
+						.then((json) => {
+							files = json;
+							window.renderFileList();
+							// 默认显示根目录README.md
+							const rootReadme = files.find(
+								(f) =>
+									(!f.folder || f.folder === "") &&
+									f.name.toLowerCase() === "readme.md"
+							);
+							if (rootReadme) {
+								window.loadFile("", rootReadme.name);
+							}
+						})
+						.catch((error) => {
+							console.error("加载文件列表错误:", error);
+							document.getElementById(
+								"fileList"
+							).innerHTML = `<div style=\"color:red\">无法加载文件列表: ${error.message}</div>`;
+						});
+				});
+			</script>
+		</div>
+	</body>
+</html>

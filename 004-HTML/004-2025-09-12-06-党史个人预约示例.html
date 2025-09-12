@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body style="text-align: center">
+		<h1 style="text-align: center"><b>党史展馆个人预约通道</b></h1>
+		<label
+			><b>观众姓名*：</b>
+			<input
+				type="text"
+				name="name"
+				required
+				style="width: 200px"
+				pattern="[\u4e00-\u9fa5A-Za-z·]{2,20}"
+				title="请输入2-20位中文或英文姓名"
+			/>
+		</label>
+		<br />
+		<br />
+		<label
+			><b>证件类型*：</b>
+			<select name="idtype" style="width: 200px">
+				<option value="身份证" selected>身份证</option>
+				<option value="护照">护照</option>
+				<option value="军官证">军官证</option>
+				<option value="港澳通行证">港澳通行证</option>
+				<option value="台胞证">台胞证</option>
+				<option value="其他">其他</option>
+			</select>
+		</label>
+		<br />
+		<br />
+		<label
+			><b>证件号码*：</b>
+			<input
+				type="text"
+				name="idcard"
+				required
+				style="width: 200px"
+				pattern="[0-9A-Za-z]{6,20}"
+				title="请输入6-20位数字或字母"
+			/>
+		</label>
+		<br />
+		<br />
+		<label
+			><b>联系电话*：</b>
+			<input
+				type="text"
+				name="phone"
+				required
+				style="width: 200px"
+				pattern="1[3-9]\d{9}"
+				title="请输入11位手机号"
+			/>
+		</label>
+		<br />
+		<br />
+		<label
+			><b>电子邮箱：</b>
+			<input type="email" name="email" style="width: 200px" />
+		</label>
+		<br />
+		<br />
+		<label
+			><b>参观日期*：</b>
+			<input
+				type="date"
+				name="date"
+				required
+				style="width: 200px"
+				pattern="\\d{4}-\\d{2}-\\d{2}"
+				title="请选择日期"
+			/>
+		</label>
+		<br />
+		<br />
+		<label
+			><b>参观时间*：</b>
+			<select name="time" style="width: 200px">
+				<option value="09:00-10:00" selected>09:00-10:00</option>
+				<option value="10:00-11:00">10:00-11:00</option>
+				<option value="11:00-12:00">11:00-12:00</option>
+				<option value="13:00-14:00">13:00-14:00</option>
+				<option value="14:00-15:00">14:00-15:00</option>
+				<option value="15:00-16:00">15:00-16:00</option>
+				<option value="16:00-17:00">16:00-17:00</option>
+			</select>
+		</label>
+		<br />
+		<br />
+		<label
+			><b>参观人数*：</b>
+			<input
+				type="number"
+				name="num"
+				required
+				style="width: 200px"
+				min="1"
+				max="10"
+				value="1"
+				pattern="[1-9]|10"
+				title="请输入1-10之间的整数"
+			/>
+		</label>
+		<br />
+		<br />
+		<button type="submit" onclick="alert('预约提交成功！')">提交预约</button>
+	</body>
+</html>
